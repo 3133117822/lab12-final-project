@@ -28,9 +28,9 @@ Software Engineering, College of Arts, Media and Technology, Chiang Mai Universi
 
 |-------|---------|
 
-| \*\*Name\*\* | YOUR FULL NAME |
+| \*\*Name\*\* | Han bingda |
 
-| \*\*Student ID\*\* | YOUR STUDENT ID |
+| \*\*Student ID\*\* | 20232078 |
 
 | \*\*University\*\* | North Minzu University |
 
@@ -158,7 +158,7 @@ lab12-final-project/
 
 &nbsp;  ```bash
 
-&nbsp;  git clone https://github.com/YOUR\_USERNAME/lab12-final-project.git
+&nbsp;  git clone https://github.com/3133117822/lab12-final-project.git
 
 &nbsp;  cd lab12-final-project
 
@@ -244,7 +244,7 @@ This project uses GitHub Actions for automated building and testing. The workflo
 
 
 
-\&copy; 2026 YOUR NAME | Lab 12 Final Project
+\&copy; 2026 Han bingda | Lab 12 Final Project
 
 
 
