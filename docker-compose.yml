@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # ===== Personal Website (Nginx) =====
+  personal-website:
+    build:
+      context: ./personal-website
+      dockerfile: Dockerfile
+    container_name: personal-website
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # ===== Todo Application (Node.js + Express) =====
+  todo-app:
+    build:
+      context: ./todo-app
+      dockerfile: Dockerfile
+    container_name: todo-app
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+# ===== Network Configuration =====
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #1a365d, #2b6cb0);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .app-header h1 {
+            font-size: 2em;
+        }
+
+        .app-header p {
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .add-section {
+            padding: 25px 30px;
+            background: #f7fafc;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-form input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .add-form input:focus {
+            outline: none;
+            border-color: #2b6cb0;
+        }
+
+        .add-form button {
+            padding: 12px 25px;
+            background: #2b6cb0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-form button:hover {
+            background: #1a365d;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.2s;
+        }
+
+        .todo-item:hover {
+            background: #f7fafc;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #a0aec0;
+        }
+
+        .todo-checkbox {
+            width: 22px;
+            height: 22px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #2b6cb0;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 1.05em;
+            color: #2d3748;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-delete {
+            padding: 6px 14px;
+            background: #fc8181;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #e53e3e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 30px;
+            color: #a0aec0;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+        }
+
+        .stats {
+            padding: 15px 30px;
+            background: #f7fafc;
+            text-align: center;
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            background: #1a365d;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1>Todo Application</h1>
+            <p>Lab 12 Final Project - Open Source Todo App</p>
+        </div>
+
+        <div class="add-section">
+            <form class="add-form" id="addForm">
+                <input type="text" id="todoInput" placeholder="What do you need to do?" autocomplete="off">
+                <button type="submit">Add</button>
+            </form>
+        </div>
+
+        <ul class="todo-list" id="todoList"></ul>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="footer">
+            &copy; 2026 Lab 12 Final Project | Todo Application
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/todos';
+        const todoList = document.getElementById('todoList');
+        const addForm = document.getElementById('addForm');
+        const todoInput = document.getElementById('todoInput');
+        const statsEl = document.getElementById('stats');
+
+        // Fetch all todos and render
+        async function fetchTodos() {
+            try {
+                const res = await fetch(API_URL);
+                const todos = await res.json();
+                renderTodos(todos);
+            } catch (err) {
+                console.error('Error fetching todos:', err);
+            }
+        }
+
+        // Render todo list
+        function renderTodos(todos) {
+            todoList.innerHTML = '';
+            if (todos.length === 0) {
+                todoList.innerHTML = '<div class="empty-state"><p>No tasks yet. Add one above!</p></div>';
+                statsEl.textContent = '';
+                return;
+            }
+
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                li.innerHTML = `
+                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
+                    <span class="todo-text">${escapeHtml(todo.title)}</span>
+                    <div class="todo-actions">
+                        <button class="btn-delete" onclick="deleteTodo(${todo.id})">Delete</button>
+                    </div>
+                `;
+                todoList.appendChild(li);
+            });
+
+            const completed = todos.filter(t => t.completed).length;
+            statsEl.textContent = `${completed} of ${todos.length} tasks completed`;
+        }
+
+        // Add a new todo
+        addForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = todoInput.value.trim();
+            if (!title) return;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title })
+                });
+                if (res.ok) {
+                    todoInput.value = '';
+                    fetchTodos();
+                }
+            } catch (err) {
+                console.error('Error adding todo:', err);
+            }
+        });
+
+        // Toggle todo completion
+        async function toggleTodo(id) {
+            const todo = [...document.querySelectorAll('.todo-item')]
+                .map(item => item.querySelector('.todo-checkbox'))
+                .forEach(cb => {});
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`);
+                const todo = await res.json();
+                await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ completed: !todo.completed })
+                });
+                fetchTodos();
+            } catch (err) {
+                console.error('Error toggling todo:', err);
+            }
+        }
+
+        // Delete a todo
+        async function deleteTodo(id) {
+            try {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                fetchTodos();
+            } catch (err) {
+                console.error('Error deleting todo:', err);
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initial load
+        fetchTodos();
+    </script>
+</body>
+</html>
