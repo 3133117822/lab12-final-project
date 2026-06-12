@@ -78,9 +78,9 @@ Both applications are deployed simultaneously on the same server using Docker Co
 
 |-------------|-----|
 
-| Personal Website | http://localhost:80 (or your deployed URL) |
+| Personal Website | https://3133117822.github.io/lab12-final-project/ (or your deployed URL) |
 
-| Todo Application | http://localhost:3001 (or your deployed URL) |
+| Todo Application | https://lab12-final-project-production.up.railway.app (or your deployed URL) |
 
 
 
